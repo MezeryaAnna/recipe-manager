@@ -5,8 +5,11 @@ import com.anya.recipemanager.model.repository.RecipeRepository;
 import com.anya.recipemanager.model.strategy.ByPercentStrategy;
 import com.anya.recipemanager.model.strategy.RankingStrategy;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class RecipeService {
@@ -27,39 +30,82 @@ public class RecipeService {
     }
 
     public Recipe createRecipe(Recipe recipe) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        validateRecipe(recipe);
+        Recipe toSave = Recipe.builder()
+                .title(recipe.getTitle().trim())
+                .instruction(recipe.getInstruction())
+                .items(recipe.getItems())
+                .build();
+        return repository.save(toSave);
     }
 
     public List<Recipe> getAllRecipes() {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return repository.findAll();
     }
 
     public Optional<Recipe> getRecipeById(long id) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        return repository.findById(id);
     }
 
     public List<Recipe> searchByIngredient(String ingredientName) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        String normalized = normalizer.normalize(ingredientName);
+        if (normalized.isEmpty()) {
+            return List.of();
+        }
+        return repository.findByIngredient(normalized);
     }
 
     public Recipe updateRecipe(long id, Recipe updatedRecipe) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        validateRecipe(updatedRecipe);
+        repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Recipe not found: " + id));
+        Recipe toSave = Recipe.builder()
+                .id(id)
+                .title(updatedRecipe.getTitle().trim())
+                .instruction(updatedRecipe.getInstruction())
+                .items(updatedRecipe.getItems())
+                .build();
+        return repository.save(toSave);
     }
 
     public void deleteRecipe(long id) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        repository.deleteById(id);
     }
 
     public List<Recipe> searchByIngredients(Collection<String> ingredientNames) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        if (ingredientNames == null || ingredientNames.isEmpty()) {
+            return List.of();
+        }
+        Map<Long, Recipe> uniqueRecipes = new LinkedHashMap<>();
+        for (String rawName : ingredientNames) {
+            for (Recipe recipe : searchByIngredient(rawName)) {
+                if (recipe.getId() != null) {
+                    uniqueRecipes.putIfAbsent(recipe.getId(), recipe);
+                }
+            }
+        }
+        return new ArrayList<>(uniqueRecipes.values());
     }
 
     public List<RankingStrategy.RankedRecipe> findMatchingRecipes(Collection<String> availableIngredients,
                                                                   RankingStrategy strategy) {
-        throw new UnsupportedOperationException("Not implemented yet");
+        RankingStrategy activeStrategy = strategy != null ? strategy : new ByPercentStrategy();
+        List<Recipe> allRecipes = repository.findAll();
+        List<RankingStrategy.RankedRecipe> candidates = new ArrayList<>(allRecipes.size());
+        for (Recipe recipe : allRecipes) {
+            MatchCalculator.MatchResult matchResult = matchCalculator.calculate(recipe, availableIngredients);
+            candidates.add(new RankingStrategy.RankedRecipe(recipe, matchResult));
+        }
+        return activeStrategy.rank(candidates);
     }
 
     public List<RankingStrategy.RankedRecipe> findMatchingRecipes(Collection<String> availableIngredients) {
         return findMatchingRecipes(availableIngredients, new ByPercentStrategy());
+    }
+
+    private void validateRecipe(Recipe recipe) {
+        if (recipe == null || recipe.getTitle() == null || recipe.getTitle().isBlank()) {
+            throw new IllegalArgumentException("Recipe title must not be blank");
+        }
     }
 }
