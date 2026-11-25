@@ -22,6 +22,12 @@ public class JdbcRecipeRepository implements RecipeRepository {
     private static final String INSERT_RECIPE_SQL =
             "INSERT INTO recipe (title, instruction) VALUES (?, ?)";
 
+    private static final String UPDATE_RECIPE_SQL =
+            "UPDATE recipe SET title = ?, instruction = ? WHERE id = ?";
+
+    private static final String DELETE_RECIPE_INGREDIENTS_SQL =
+            "DELETE FROM recipe_ingredient WHERE recipe_id = ?";
+
     private static final String UPSERT_INGREDIENT_SQL =
             "INSERT INTO ingredient (name) VALUES (?) ON CONFLICT (name) DO NOTHING";
 
@@ -68,7 +74,15 @@ public class JdbcRecipeRepository implements RecipeRepository {
             boolean previousAutoCommit = conn.getAutoCommit();
             conn.setAutoCommit(false);
             try {
-                long recipeId = insertRecipe(conn, recipe);
+                long recipeId;
+                if (recipe.getId() == null) {
+                    recipeId = insertRecipe(conn, recipe);
+                } else {
+                    recipeId = recipe.getId();
+                    updateRecipe(conn, recipeId, recipe);
+                    deleteRecipeIngredients(conn, recipeId);
+                }
+
                 for (RecipeItem item : recipe.getItems()) {
                     long ingredientId = getOrCreateIngredientId(conn, item.getIngredientName());
                     insertRecipeIngredient(conn, recipeId, ingredientId, item);
@@ -151,6 +165,25 @@ public class JdbcRecipeRepository implements RecipeRepository {
                 }
                 throw new SQLException("No generated key returned for recipe");
             }
+        }
+    }
+
+    private void updateRecipe(Connection conn, long id, Recipe recipe) throws SQLException {
+        try (PreparedStatement stmt = conn.prepareStatement(UPDATE_RECIPE_SQL)) {
+            stmt.setString(1, recipe.getTitle());
+            stmt.setString(2, recipe.getInstruction());
+            stmt.setLong(3, id);
+            int updatedRows = stmt.executeUpdate();
+            if (updatedRows == 0) {
+                throw new SQLException("Recipe not found for update: " + id);
+            }
+        }
+    }
+
+    private void deleteRecipeIngredients(Connection conn, long recipeId) throws SQLException {
+        try (PreparedStatement stmt = conn.prepareStatement(DELETE_RECIPE_INGREDIENTS_SQL)) {
+            stmt.setLong(1, recipeId);
+            stmt.executeUpdate();
         }
     }
 

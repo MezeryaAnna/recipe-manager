@@ -1,1 +1,313 @@
+:root {
+    --bg-app: #f3f5f4;
+    --bg-surface: #ffffff;
+    --bg-soft: #f7f9f8;
+    --accent: #1f8a5b;
+    --accent-hover: #176c47;
+    --accent-soft: #e6f4ee;
+    --warm-soft: #fef6df;
+    --danger: #d64545;
+    --danger-hover: #b53232;
+    --text-main: #1b2420;
+    --text-muted: #64726b;
+    --border: #e3e8e5;
+    --radius-lg: 18px;
+    --radius-md: 12px;
+    --radius-sm: 10px;
+    --shadow: 0 8px 24px rgba(27, 36, 32, 0.05);
+}
 
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 24px;
+    background-color: var(--bg-app);
+    color: var(--text-main);
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+    line-height: 1.5;
+}
+
+.app-shell {
+    max-width: 1120px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    gap: 24px;
+    align-items: start;
+}
+
+.sidebar {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px 14px;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 24px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 10px 18px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    font-weight: 700;
+    font-size: 17px;
+    color: var(--text-main);
+}
+
+.brand-badge {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+}
+
+.side-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.side-nav a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: var(--radius-md);
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.side-nav a:hover {
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+.main-panel {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 28px 32px;
+    box-shadow: var(--shadow);
+}
+
+h1, h2, h3 {
+    margin-top: 0;
+    color: var(--text-main);
+}
+
+h1 {
+    font-size: 26px;
+    margin-bottom: 8px;
+}
+
+h2 {
+    font-size: 18px;
+    margin-top: 24px;
+    margin-bottom: 12px;
+}
+
+.subtitle, .meta {
+    color: var(--text-muted);
+    font-size: 14px;
+}
+
+.subtitle {
+    margin-top: 0;
+    margin-bottom: 22px;
+}
+
+a {
+    color: var(--accent);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.recipe-card, .ingredient-chip {
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 16px;
+}
+
+.recipe-card-title {
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 6px;
+    display: block;
+}
+
+.recipe-list-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.recipe-row-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    background: var(--bg-soft);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 14px 18px;
+}
+
+.pill {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+.pill-warm {
+    background: var(--warm-soft);
+    color: #8a6200;
+}
+
+.field {
+    margin-bottom: 16px;
+}
+
+label {
+    display: block;
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 6px;
+    color: var(--text-main);
+}
+
+input[type="text"],
+input[type="number"],
+textarea,
+select {
+    width: 100%;
+    max-width: 560px;
+    padding: 10px 13px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-surface);
+    color: var(--text-main);
+    font-family: inherit;
+    font-size: 14px;
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.ingredient-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.1fr auto;
+    gap: 10px;
+    max-width: 680px;
+    margin-bottom: 10px;
+}
+
+.ingredient-row input {
+    max-width: none;
+}
+
+.btn, button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 18px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background-color: var(--accent);
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.btn:hover, button:hover {
+    background-color: var(--accent-hover);
+    text-decoration: none;
+}
+
+.btn-secondary {
+    background-color: var(--accent-soft);
+    color: var(--accent);
+}
+
+.btn-secondary:hover {
+    background-color: #d4ede2;
+}
+
+button.danger {
+    background-color: var(--danger);
+}
+
+button.danger:hover {
+    background-color: var(--danger-hover);
+}
+
+.actions-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.error {
+    color: var(--danger-hover);
+    background-color: #fff2f2;
+    border: 1px solid #f7c7c7;
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 16px;
+    max-width: 560px;
+}
+
+@media (max-width: 780px) {
+    .app-shell {
+        grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+        position: static;
+    }
+
+    .ingredient-row {
+        grid-template-columns: 1fr;
+    }
+}
